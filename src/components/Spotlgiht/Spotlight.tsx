@@ -1,15 +1,14 @@
-import { useColorScheme } from "@/contexts/ColorSchemeContext";
 import { useSpotlight } from "@/contexts/SportlightContext";
 import { navigationLinks } from "@/data/navigation-links";
+import { colorSchemeAtom } from "@/stores/app";
 import { MenuItem } from "@/types/menu-item";
 import { SearchCategory, SearchResult } from "@/types/spotlight-types";
 import classNames from "classnames";
+import { useAtom } from "jotai";
 import Link from "next/link";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRef } from "react";
 import { MdChevronRight, MdClose, MdOpenInNew, MdSearch } from "react-icons/md";
-// import Bold from "../Atoms/Bold";
-// import Text from "../Atoms/Text";
 
 const NAVIGATION_CATEGORY = "navigation-links";
 const BLOGS_CATEGORY = "blogs";
@@ -63,58 +62,7 @@ const Spotlight = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { toggleColorScheme, setColorScheme, colorScheme } = useColorScheme();
-
-  const actionResults = useMemo(
-    (): SearchResult[] => [
-      {
-        id: "actions-toggle-appearance",
-        title: "Toggle Appearance",
-        desc: `Current Appearance is '${colorScheme}'`,
-        type: "button",
-        onClick: toggleColorScheme,
-        category: searchCategories.get(ACTIONS_CATEGORY)!,
-        keywords: [
-          "dark",
-          "light",
-          "system",
-          "auto",
-          "mode",
-          "theme",
-          "colorscheme",
-          "scheme",
-        ],
-      },
-      {
-        id: "actions-toggle-appearance",
-        title: "Enable Dark Theme",
-        desc: colorScheme === "dark" ? "Current" : undefined,
-        type: "button",
-        onClick: () => setColorScheme("dark"),
-        category: searchCategories.get(ACTIONS_CATEGORY)!,
-        keywords: ["colorscheme", "theme", "mode"],
-      },
-      {
-        id: "actions-toggle-appearance",
-        title: "Enable Light Theme",
-        desc: colorScheme === "light" ? "Current" : undefined,
-        type: "button",
-        onClick: () => setColorScheme("light"),
-        category: searchCategories.get(ACTIONS_CATEGORY)!,
-        keywords: ["colorscheme", "theme", "mode"],
-      },
-      {
-        id: "actions-toggle-appearance",
-        title: "Enable System Theme",
-        desc: colorScheme === "system" ? "Current" : undefined,
-        type: "button",
-        onClick: () => setColorScheme("system"),
-        category: searchCategories.get(ACTIONS_CATEGORY)!,
-        keywords: ["colorscheme", "auto", "theme", "mode"],
-      },
-    ],
-    [toggleColorScheme, colorScheme, setColorScheme]
-  );
+  const [colorScheme, setColorScheme] = useAtom(colorSchemeAtom);
 
   const searchResultsWithSections = useMemo(() => {
     const categories = new Set<SearchCategory>();
@@ -218,62 +166,59 @@ const Spotlight = () => {
     [closeSpotlight, onArrowDown, onArrowUp, onEnter]
   );
 
-  const handleSearch = useCallback(
-    (text: string) => {
-      const searchKeys = text.toLocaleLowerCase().split(" ").filter(Boolean);
-      const allResults = [...predefinedSearchResults, ...actionResults];
+  const handleSearch = useCallback((text: string) => {
+    const searchKeys = text.toLocaleLowerCase().split(" ").filter(Boolean);
+    const allResults = [...predefinedSearchResults];
 
-      let finalResults = allResults
-        .map((item) => {
-          let isDirectMatch = false;
-          let matches = 0;
-          const titleKeys = item.title
-            .toLocaleLowerCase()
+    let finalResults = allResults
+      .map((item) => {
+        let isDirectMatch = false;
+        let matches = 0;
+        const titleKeys = item.title
+          .toLocaleLowerCase()
+          .replaceAll(`"`, "")
+          .replaceAll(`'`, "")
+          .replaceAll("`", "")
+          .split(" ");
+        const descKeys =
+          item.desc
+            ?.toLocaleLowerCase()
             .replaceAll(`"`, "")
             .replaceAll(`'`, "")
             .replaceAll("`", "")
-            .split(" ");
-          const descKeys =
-            item.desc
-              ?.toLocaleLowerCase()
-              .replaceAll(`"`, "")
-              .replaceAll(`'`, "")
-              .replaceAll("`", "")
-              .split(" ") || [];
-          const categoryKeys =
-            item.category.name.toLocaleLowerCase().split(" ") || [];
-          const keywords = item.keywords || [];
-          [...titleKeys, ...descKeys, ...categoryKeys, ...keywords]
-            .filter(Boolean)
-            .forEach((key) => {
-              searchKeys.forEach((skey) => {
-                if (key.toLocaleLowerCase() === skey) {
-                  isDirectMatch = true;
-                }
-                if (key.toLocaleLowerCase().startsWith(skey)) {
-                  matches++;
-                }
-              });
+            .split(" ") || [];
+        const categoryKeys =
+          item.category.name.toLocaleLowerCase().split(" ") || [];
+        const keywords = item.keywords || [];
+        [...titleKeys, ...descKeys, ...categoryKeys, ...keywords]
+          .filter(Boolean)
+          .forEach((key) => {
+            searchKeys.forEach((skey) => {
+              if (key.toLocaleLowerCase() === skey) {
+                isDirectMatch = true;
+              }
+              if (key.toLocaleLowerCase().startsWith(skey)) {
+                matches++;
+              }
             });
+          });
 
-          return { isDirectMatch, matches, item };
-        })
-        .filter((item) => item.matches > 0)
-        .sort((i1, i2) => i1.item.title.localeCompare(i2.item.title))
-        .sort((i1, i2) =>
-          i1.item.category.name.localeCompare(i2.item.category.name)
-        )
-        .sort((i1, i2) => i2.matches - i1.matches)
-        .sort((i1, i2) => {
-          if (i1.isDirectMatch && !i2.isDirectMatch) return -1;
-          if (!i1.isDirectMatch && i2.isDirectMatch) return 1;
-          return 0;
-        })
-        .map((item) => item.item);
-      setSearchResults(finalResults);
-    },
-    [actionResults]
-  );
+        return { isDirectMatch, matches, item };
+      })
+      .filter((item) => item.matches > 0)
+      .sort((i1, i2) => i1.item.title.localeCompare(i2.item.title))
+      .sort((i1, i2) =>
+        i1.item.category.name.localeCompare(i2.item.category.name)
+      )
+      .sort((i1, i2) => i2.matches - i1.matches)
+      .sort((i1, i2) => {
+        if (i1.isDirectMatch && !i2.isDirectMatch) return -1;
+        if (!i1.isDirectMatch && i2.isDirectMatch) return 1;
+        return 0;
+      })
+      .map((item) => item.item);
+    setSearchResults(finalResults);
+  }, []);
 
   useEffect(() => {
     document.documentElement.classList.toggle("overflow-hidden", true);

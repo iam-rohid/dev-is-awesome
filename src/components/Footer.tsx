@@ -1,7 +1,7 @@
 import { SITE_INFO } from "@/constants/site";
 import { MenuItem } from "@/types/menu-item";
 import Link from "next/link";
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 
 const Footer = () => {
   const footerLinks = useMemo(
@@ -37,7 +37,7 @@ const Footer = () => {
     []
   );
   return (
-    <footer className="bg-gray-100 dark:bg-gray-800">
+    <footer className="bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800">
       <div className="mx-auto max-w-7xl px-4 w-full">
         <div className="py-16 text-center">
           <Link href={`/`}>
@@ -101,7 +101,7 @@ const Footer = () => {
             )}
           </p>
         </div>
-        <div className="py-8 border-t border-gray-200 dark:border-gray-700">
+        <div className="py-8 border-t border-gray-200 dark:border-gray-800">
           <div className="flex flex-wrap gap-4 items-center justify-center">
             {footerLinks.map((item) => (
               <Link key={item.href} href={item.href}>

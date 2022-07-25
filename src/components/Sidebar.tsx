@@ -5,7 +5,7 @@ import classNames from "classnames";
 import { useAtom } from "jotai";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { MdChevronRight, MdClose } from "react-icons/md";
 import AppLogo from "./AppLogo";
 import Backdrop from "./Backdrop";
@@ -32,6 +32,10 @@ const Sidebar = () => {
   const handleCloseSidebar = useCallback(() => {
     setShowSidebar(false);
   }, [setShowSidebar]);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("overflow-hidden", showSidebar);
+  }, [showSidebar]);
 
   if (!showSidebar) {
     return null;
