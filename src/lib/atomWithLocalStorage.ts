@@ -4,7 +4,6 @@ const atomWithAsyncStorage = <T>(key: string, initialValue: T) => {
   const baseAtom = atom<T>(initialValue);
   baseAtom.onMount = (setValue) => {
     const item = localStorage.getItem(key);
-    console.log({ item });
     if (item) {
       setValue(JSON.parse(item));
     }
@@ -15,7 +14,6 @@ const atomWithAsyncStorage = <T>(key: string, initialValue: T) => {
       const nextValue =
         typeof update === "function" ? update(get(baseAtom)) : update;
       set(baseAtom, nextValue);
-      console.log(nextValue);
       if (!!nextValue) {
         localStorage.setItem(key, JSON.stringify(nextValue));
       }

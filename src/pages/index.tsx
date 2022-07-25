@@ -1,141 +1,57 @@
 import { SITE_INFO } from "@/constants/site";
 import DefaultLayout from "@/layouts/DefaultLayout";
+import imageUrl from "@/lib/imageUrl";
+import sanityClient from "@/lib/sanityClient";
 import { CustomNextPage } from "@/types/next";
+import {
+  AuthorType,
+  CourseType,
+  PostType,
+  TagType,
+} from "@/types/sanity-api-types";
+import moment from "moment";
 import { GetStaticProps } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { useCallback, useEffect } from "react";
+import { MdChevronRight } from "react-icons/md";
 
 type Props = {
-  posts: any[];
+  featuredCourses: CourseType[];
+  featuredPosts: PostType[];
+  recentPosts: (PostType & {
+    tags: TagType[];
+    author: AuthorType;
+  })[];
+  popularTags: TagType[];
+  popularPosts: PostType[];
 };
 
-const HomePage: CustomNextPage<Props> = () => {
+const HomePage: CustomNextPage<Props> = ({
+  featuredCourses,
+  featuredPosts,
+  recentPosts,
+  popularTags,
+  popularPosts,
+}) => {
+  useEffect(() => {
+    console.log({ recentPosts });
+  }, [recentPosts]);
+
   return (
     <>
       <LandingHeader />
-      <section className="my-32">
-        <div className="container mx-auto px-4 xl:max-w-5xl">
-          <SectionHeader title="Featured Courses" />
-          <div className="grid grid-cols-12 gap-8">
-            <div className="col-span-12 lg:col-span-8 lg:row-span-2">
-              <TitleInsideThumbCard />
-            </div>
-            <div className="col-span-12 md:col-span-6 lg:col-span-4">
-              <TopThumbBottomContentCard
-                title="Lorem ipsum dolor sit amet consectetur adipisicing elit."
-                thumb="https://images.unsplash.com/photo-1650724668061-a755d0dd744f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1337&q=80"
-                href="#"
-                tags={[
-                  {
-                    label: "TypeScript",
-                    href: "/categories/typescript",
-                  },
-                  {
-                    label: "React",
-                    href: "/categories/react",
-                  },
-                ]}
-              />
-            </div>
-            <div className="col-span-12 md:col-span-6 lg:col-span-4">
-              <TopThumbBottomContentCard
-                title="Lorem ipsum dolor sit amet consectetur adipisicing elit."
-                thumb="https://images.unsplash.com/photo-1650724668061-a755d0dd744f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1337&q=80"
-                href="#"
-                tags={[
-                  {
-                    label: "TypeScript",
-                    href: "/categories/typescript",
-                  },
-                  {
-                    label: "React",
-                    href: "/categories/react",
-                  },
-                ]}
-              />
-            </div>
-          </div>
+      <FeaturedCoursesSection data={featuredCourses} />
+      <FeaturedPostsSection data={featuredPosts} />
+      <div className="container mx-auto my-32 flex flex-col gap-16 px-4 md:flex-row xl:max-w-7xl">
+        <div className="flex-1">
+          <RecentPostsSection data={recentPosts} />
         </div>
-      </section>
-      <section className="my-32">
-        <div className="container mx-auto px-4 xl:max-w-5xl">
-          <SectionHeader title="Featured Tutorials" />
-          <div className="grid grid-cols-12 gap-8">
-            <div className="col-span-12 md:col-span-6">
-              <TopThumbBottomContentCard
-                title="Lorem ipsum dolor sit amet consectetur adipisicing elit."
-                thumb="https://images.unsplash.com/photo-1650724668061-a755d0dd744f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1337&q=80"
-                href="#"
-                tags={[
-                  {
-                    label: "TypeScript",
-                    href: "/categories/typescript",
-                  },
-                  {
-                    label: "React",
-                    href: "/categories/react",
-                  },
-                ]}
-                excerpt="Lorem ipsum dolor sit, amet consectetur adipisicing elit. Natus voluptatum laboriosam ducimus autem vel voluptates tempore obcaecati optio amet nihil."
-              />
-            </div>
-            <div className="col-span-12 md:col-span-6">
-              <TopThumbBottomContentCard
-                title="Lorem ipsum dolor sit amet consectetur adipisicing elit."
-                thumb="https://images.unsplash.com/photo-1650724668061-a755d0dd744f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1337&q=80"
-                href="#"
-                tags={[
-                  {
-                    label: "TypeScript",
-                    href: "/categories/typescript",
-                  },
-                  {
-                    label: "React",
-                    href: "/categories/react",
-                  },
-                ]}
-                excerpt="Lorem ipsum dolor sit, amet consectetur adipisicing elit. Natus voluptatum laboriosam ducimus autem vel voluptates tempore obcaecati optio amet nihil."
-              />
-            </div>
-            <div className="col-span-12 md:col-span-6">
-              <TopThumbBottomContentCard
-                title="Lorem ipsum dolor sit amet consectetur adipisicing elit."
-                thumb="https://images.unsplash.com/photo-1650724668061-a755d0dd744f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1337&q=80"
-                href="#"
-                tags={[
-                  {
-                    label: "TypeScript",
-                    href: "/categories/typescript",
-                  },
-                  {
-                    label: "React",
-                    href: "/categories/react",
-                  },
-                ]}
-                excerpt="Lorem ipsum dolor sit, amet consectetur adipisicing elit. Natus voluptatum laboriosam ducimus autem vel voluptates tempore obcaecati optio amet nihil."
-              />
-            </div>
-            <div className="col-span-12 md:col-span-6">
-              <TopThumbBottomContentCard
-                title="Lorem ipsum dolor sit amet consectetur adipisicing elit."
-                thumb="https://images.unsplash.com/photo-1650724668061-a755d0dd744f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1337&q=80"
-                href="#"
-                tags={[
-                  {
-                    label: "TypeScript",
-                    href: "/categories/typescript",
-                  },
-                  {
-                    label: "React",
-                    href: "/categories/react",
-                  },
-                ]}
-                excerpt="Lorem ipsum dolor sit, amet consectetur adipisicing elit. Natus voluptatum laboriosam ducimus autem vel voluptates tempore obcaecati optio amet nihil."
-              />
-            </div>
-          </div>
+        <div className="flex flex-col gap-16 md:w-80">
+          <PopularTagsSection data={popularTags} />
+          <PopularPostsSection data={popularPosts} />
         </div>
-      </section>
+      </div>
     </>
   );
 };
@@ -145,16 +61,231 @@ HomePage.getLayout = (page) => <DefaultLayout>{page}</DefaultLayout>;
 export default HomePage;
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
+  const featuredCourses = await sanityClient.fetch(
+    `*[_type == "course" && featured == true][0..2] | order(publishedAt desc, title asc)`
+  );
+  const featuredPosts = await sanityClient.fetch(
+    `*[_type == "post" && featured == true][0..3] | order(publishedAt desc, title asc)`
+  );
+  const recentPosts = await sanityClient.fetch(
+    `*[_type == "post"][0..9]{
+      ..., 
+      "tags": *[_type == "tag" && _id in ^.tags[]._ref], 
+      author->
+    } | order(publishedAt desc, title asc)`
+  );
+  const popularTags = await sanityClient.fetch(
+    `*[_type == "tag"][0..9] | order(_createdAt desc, title asc)`
+  );
+  const popularPosts = await sanityClient.fetch(
+    `*[_type == "post"][0..3] | order(_createdAt desc, title asc)`
+  );
   return {
     props: {
-      posts: [],
+      featuredCourses,
+      featuredPosts,
+      recentPosts,
+      popularTags,
+      popularPosts,
     },
   };
 };
 
+const FeaturedCoursesSection = (props: { data: CourseType[] }) => {
+  const renderItem = useCallback((item: CourseType, index: number) => {
+    const href = `/courses/${item.slug.current}`;
+    return (
+      <article
+        className="col-span-12 md:col-span-6 lg:col-span-4"
+        key={item._id}
+      >
+        <Link href={href}>
+          <a className="group relative block aspect-video overflow-hidden rounded-xl">
+            <Image
+              src={imageUrl(item.coverImage).url()}
+              alt={`${item.title} - Cover Image`}
+              layout="fill"
+              objectFit="cover"
+            />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100">
+              <p>View Course</p>
+            </div>
+          </a>
+        </Link>
+        <div className="mt-4 flex gap-4">
+          <div className="h-full border-r border-gray-500 pr-4 text-3xl text-gray-500 dark:border-gray-400 dark:text-gray-400">
+            <span>{index + 1}</span>
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold line-clamp-2">
+              <Link href={href}>{item.title}</Link>
+            </h2>
+          </div>
+        </div>
+      </article>
+    );
+  }, []);
+
+  if (props.data && props.data.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="my-32">
+      <div className="container mx-auto px-4 xl:max-w-7xl">
+        <SectionHeader
+          title="Featured Courses"
+          moreLink={{
+            label: "All Courses",
+            href: "/courses",
+          }}
+        />
+        <div className="grid grid-cols-12 gap-8">
+          {props.data.map((item, index) => renderItem(item, index))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const FeaturedPostsSection = (props: { data: PostType[] }) => {
+  const renderItem = useCallback((item: PostType, index: number) => {
+    const href = `/posts/${item.slug.current}`;
+    return (
+      <article
+        className="col-span-12 md:col-span-6 lg:col-span-3"
+        key={item._id}
+      >
+        <Link href={href}>
+          <a className="group relative block aspect-video overflow-hidden rounded-xl">
+            <Image
+              src={imageUrl(item.coverImage).url()}
+              alt={`${item.title} - Cover Image`}
+              layout="fill"
+              objectFit="cover"
+            />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100">
+              <p>Read More</p>
+            </div>
+          </a>
+        </Link>
+        <div className="mt-4 flex gap-4">
+          <div className="h-full border-r border-gray-500 pr-4 text-3xl text-gray-500 dark:border-gray-400 dark:text-gray-400">
+            <span>{index + 1}</span>
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold line-clamp-2">
+              <Link href={href}>{item.title}</Link>
+            </h2>
+          </div>
+        </div>
+      </article>
+    );
+  }, []);
+
+  if (props.data && props.data.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="my-32">
+      <div className="container mx-auto px-4 xl:max-w-7xl">
+        <SectionHeader
+          title="Featured Posts"
+          moreLink={{
+            label: "All Posts",
+            href: "/posts",
+          }}
+        />
+        <div className="grid grid-cols-12 gap-8">
+          {props.data.map((item, index) => renderItem(item, index))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const RecentPostsSection = (props: { data: Props["recentPosts"] }) => {
+  const renderItem = useCallback((item: Props["recentPosts"][0]) => {
+    const href = `/posts/${item.slug.current}`;
+    return (
+      <article className="col-span-12 lg:col-span-6" key={item._id}>
+        <Link href={href}>
+          <a className="group relative block aspect-video overflow-hidden rounded-xl">
+            <Image
+              src={imageUrl(item.coverImage).url()}
+              alt={`${item.title} - Cover Image`}
+              layout="fill"
+              objectFit="cover"
+            />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100">
+              <p>Read More</p>
+            </div>
+          </a>
+        </Link>
+        {item.tags.length > 0 && (
+          <ul className="mt-4 flex flex-wrap gap-2">
+            {item.tags.map((tag) => (
+              <li key={tag._id}>
+                <Link href={`/tags/${tag.slug.current}`}>
+                  <a
+                    className="rounded-md border border-gray-200 bg-gray-100 px-2 py-1.5 text-sm hover:brightness-95 dark:border-gray-800 dark:bg-gray-900 dark:hover:brightness-75"
+                    style={{
+                      backgroundColor: tag.backgroundColor,
+                      color: tag.foregroundColor,
+                    }}
+                  >
+                    #{tag.slug.current}
+                  </a>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+        <h2 className="mt-4 text-2xl font-bold line-clamp-2">
+          <Link href={href}>{item.title}</Link>
+        </h2>
+        <p className="mt-2 text-sm uppercase text-gray-600 line-clamp-2 dark:text-gray-300">
+          <span>
+            <b>{moment(item.publishedAt).format("MMM DD, YYYY")}</b>
+          </span>{" "}
+          •{" "}
+          <span>
+            By{" "}
+            <Link href={`/authors/${item.author.slug.current}`}>
+              <a>
+                <b>{item.author.name}</b>
+              </a>
+            </Link>
+          </span>
+        </p>
+      </article>
+    );
+  }, []);
+
+  if (props.data && props.data.length === 0) {
+    return null;
+  }
+
+  return (
+    <section>
+      <SectionHeader
+        title="Recent Posts"
+        moreLink={{
+          label: "All Posts",
+          href: "/posts",
+        }}
+      />
+      <div className="grid grid-cols-12 gap-8">
+        {props.data.map((item) => renderItem(item))}
+      </div>
+    </section>
+  );
+};
+
 const LandingHeader = () => (
   <header className="my-32 text-center lg:my-48">
-    <div className="container mx-auto px-4 xl:max-w-5xl">
+    <div className="container mx-auto px-4 xl:max-w-7xl">
       <div className="prose min-w-0 max-w-none dark:prose-invert md:prose-lg lg:prose-xl">
         <h1>
           Learn <span style={{ color: "#0EA5E9" }}>Web</span> &{" "}
@@ -179,127 +310,121 @@ const LandingHeader = () => (
   </header>
 );
 
-const SectionHeader = ({ title, desc }: { title: string; desc?: string }) => (
-  <div className="mb-8">
-    <p className="text-3xl font-bold">{title}</p>
-    {!!desc && <p className="mt-2  text-gray-600 dark:text-gray-300">{desc}</p>}
-  </div>
-);
+const PopularTagsSection = (props: { data: TagType[] }) => {
+  const renderItem = useCallback((item: TagType, index: number) => {
+    return (
+      <li key={item._id}>
+        <Link href={`/tags/${item.slug.current}`}>
+          <a>
+            <p
+              className="flex items-center justify-center rounded-md border border-gray-200 bg-gray-100 py-1 px-3 hover:brightness-95 dark:border-gray-800 dark:bg-gray-900 dark:hover:brightness-75"
+              style={{
+                backgroundColor: item.backgroundColor,
+                color: item.foregroundColor,
+              }}
+            >
+              #{item.slug.current}
+            </p>
+          </a>
+        </Link>
+      </li>
+    );
+  }, []);
 
-const LeftTitleRightThumbCard = () => (
-  <article className="flex flex-col gap-4">
-    <div className="flex gap-4">
-      <div className="flex-1">
-        <h2 className="mb-2 text-xl font-bold leading-relaxed">
-          <Link href="">
-            <a>
-              Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cum!
-            </a>
-          </Link>
-        </h2>
-        <ul className="flex gap-4">
-          <li>
-            <Link href="/">
-              <a>TypeScript</a>
-            </Link>
-          </li>
-          <li>
-            <Link href="/">
-              <a>React</a>
-            </Link>
-          </li>
-        </ul>
-      </div>
-      <div>
-        <Link href="/">
-          <a className="group relative block aspect-video w-36 overflow-hidden rounded-xl md:w-48">
+  if (props.data.length === 0) return null;
+
+  return (
+    <section>
+      <SectionHeader
+        title="Popular Tags"
+        moreLink={{
+          label: "All Tags",
+          href: "/tags",
+        }}
+      />
+      <ul className="flex flex-wrap gap-2">
+        {props.data.map((item, index) => renderItem(item, index))}
+      </ul>
+    </section>
+  );
+};
+const PopularPostsSection = (props: { data: PostType[] }) => {
+  const renderItem = useCallback((item: PostType, index: number) => {
+    const href = `/posts/${item.slug.current}`;
+    return (
+      <article
+        className="col-span-12 md:col-span-6 lg:col-span-3"
+        key={item._id}
+      >
+        <Link href={href}>
+          <a className="group relative block aspect-video overflow-hidden rounded-xl">
             <Image
-              src="https://images.unsplash.com/photo-1650724668061-a755d0dd744f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1337&q=80"
-              alt="thumbnail"
+              src={imageUrl(item.coverImage).url()}
+              alt={`${item.title} - Cover Image`}
               layout="fill"
               objectFit="cover"
             />
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-center opacity-0 group-hover:opacity-100">
-              <p className="text-white">Read More</p>
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100">
+              <p>Read More</p>
             </div>
           </a>
         </Link>
-      </div>
-    </div>
-    <p className="text-gray-600 line-clamp-2 dark:text-gray-300">
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas minima
-      temporibus deleniti amet doloremque fuga deserunt blanditiis quia tempore
-      ea aliquam fugiat, facilis ad quidem distinctio nostrum voluptates cumque
-      illum. Officiis, asperiores!
-    </p>
-  </article>
-);
-
-const TopThumbBottomContentCard = (props: {
-  title: string;
-  thumb: string;
-  href: string;
-  excerpt?: string;
-  tags?: {
-    label: string;
-    href: string;
-  }[];
-}) => (
-  <article>
-    <Link href={props.href}>
-      <a className="group relative mb-4 block aspect-video w-full overflow-hidden rounded-xl">
-        <Image
-          src={props.thumb}
-          alt="thumbnail"
-          layout="fill"
-          objectFit="cover"
-        />
-        <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-center opacity-0 group-hover:opacity-100">
-          <p className="text-white">Read More</p>
+        <div className="mt-4 flex gap-4">
+          <div className="h-full border-r border-gray-500 pr-4 text-3xl text-gray-500 dark:border-gray-400 dark:text-gray-400">
+            <span>{index + 1}</span>
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold line-clamp-2">
+              <Link href={href}>{item.title}</Link>
+            </h2>
+          </div>
         </div>
-      </a>
-    </Link>
+      </article>
+    );
+  }, []);
 
-    <div>
-      <h2 className="text-2xl font-bold leading-snug">
-        <Link href={props.href}>
-          <a>{props.title}</a>
+  if (props.data.length === 0) return null;
+
+  return (
+    <section id="popular-posts">
+      <SectionHeader
+        title="Popular Posts"
+        moreLink={{
+          label: "All Posts",
+          href: "/posts",
+        }}
+      />
+      <ul className="grid gap-8">
+        {props.data.map((item, index) => renderItem(item, index))}
+      </ul>
+    </section>
+  );
+};
+
+const SectionHeader = ({
+  title,
+  desc,
+  moreLink,
+}: {
+  title: string;
+  desc?: string;
+  moreLink?: { label?: string; href: string };
+}) => (
+  <div className="mb-8">
+    <div className="flex items-center gap-2 overflow-hidden">
+      <p className="flex-1 truncate text-2xl font-bold">{title}</p>
+      {!!moreLink && (
+        <Link href={moreLink.href}>
+          <a
+            className="flex items-center
+         justify-center gap-1 whitespace-nowrap rounded-md font-medium hover:text-gray-600 dark:hover:text-gray-300"
+          >
+            <span>{moreLink.label || "See all"}</span>
+            <MdChevronRight className="text-2xl" />
+          </a>
         </Link>
-      </h2>
-      {!!props.tags && props.tags.length > 0 && (
-        <ul className="mt-2 flex gap-4">
-          {props.tags.map((tag, index) => (
-            <li key={index}>
-              <Link href={tag.href}>
-                <a>{tag.label}</a>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-      {!!props.excerpt && (
-        <p className="mt-2 text-gray-600 line-clamp-2 dark:text-gray-300">
-          {props.excerpt}
-        </p>
       )}
     </div>
-  </article>
-);
-
-const TitleInsideThumbCard = () => (
-  <article className="relative aspect-square overflow-hidden rounded-xl bg-gray-500">
-    <Image
-      src="https://images.unsplash.com/photo-1530893609608-32a9af3aa95c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364&q=80"
-      alt="thumbnail"
-      layout="fill"
-      objectFit="cover"
-    />
-    <div className="absolute inset-0 flex flex-col justify-end p-8">
-      <h2 className="text-4xl font-bold leading-snug text-white">
-        <Link href="#">
-          <a>Lorem ipsum dolor sit amet consectetur adipisicing elit.</a>
-        </Link>
-      </h2>
-    </div>
-  </article>
+    {!!desc && <p className="mt-2 text-gray-600 dark:text-gray-300">{desc}</p>}
+  </div>
 );
