@@ -1,12 +1,14 @@
+import DefaultPostCard from "@/components/cards/DefaultPostCard";
+import FeaturedPostCard from "@/components/cards/FeaturedPostCard";
 import { SITE_INFO } from "@/constants/site";
 import DefaultLayout from "@/layouts/DefaultLayout";
 import imageUrl from "@/lib/imageUrl";
 import sanityClient from "@/lib/sanityClient";
 import { CustomNextPage } from "@/types/next";
 import {
-  AuthorType,
   CourseType,
   PostType,
+  PostWithAuthorAndTags,
   TagType,
 } from "@/types/sanity-api-types";
 import moment from "moment";
@@ -19,10 +21,7 @@ import { MdChevronRight } from "react-icons/md";
 type Props = {
   featuredCourses: CourseType[];
   featuredPosts: PostType[];
-  recentPosts: (PostType & {
-    tags: TagType[];
-    author: AuthorType;
-  })[];
+  recentPosts: PostWithAuthorAndTags[];
   popularTags: TagType[];
   popularPosts: PostType[];
 };
@@ -68,11 +67,11 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
     `*[_type == "post" && featured == true][0..3] | order(publishedAt desc, title asc)`
   );
   const recentPosts = await sanityClient.fetch(
-    `*[_type == "post"][0..9]{
+    `*[_type == "post"]{
       ..., 
       "tags": *[_type == "tag" && _id in ^.tags[]._ref], 
       author->
-    } | order(publishedAt desc, title asc)`
+    }[0..9] | order(publishedAt desc, title asc)`
   );
   const popularTags = await sanityClient.fetch(
     `*[_type == "tag"][0..9] | order(_createdAt desc, title asc)`
@@ -149,46 +148,12 @@ const FeaturedCoursesSection = (props: { data: CourseType[] }) => {
 };
 
 const FeaturedPostsSection = (props: { data: PostType[] }) => {
-  const renderItem = useCallback((item: PostType, index: number) => {
-    const href = `/posts/${item.slug.current}`;
-    return (
-      <article
-        className="col-span-12 md:col-span-6 lg:col-span-3"
-        key={item._id}
-      >
-        <Link href={href}>
-          <a className="group relative block aspect-video overflow-hidden rounded-xl">
-            <Image
-              src={imageUrl(item.coverImage).url()}
-              alt={`${item.title} - Cover Image`}
-              layout="fill"
-              objectFit="cover"
-            />
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100">
-              <p>Read More</p>
-            </div>
-          </a>
-        </Link>
-        <div className="mt-4 flex gap-4">
-          <div className="h-full border-r border-gray-500 pr-4 text-3xl text-gray-500 dark:border-gray-400 dark:text-gray-400">
-            <span>{index + 1}</span>
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold line-clamp-2">
-              <Link href={href}>{item.title}</Link>
-            </h2>
-          </div>
-        </div>
-      </article>
-    );
-  }, []);
-
   if (props.data && props.data.length === 0) {
     return null;
   }
 
   return (
-    <section className="my-32">
+    <section className="my-32" id="featured-posts">
       <div className="container mx-auto px-4 xl:max-w-7xl">
         <SectionHeader
           title="Featured Posts"
@@ -197,8 +162,10 @@ const FeaturedPostsSection = (props: { data: PostType[] }) => {
             href: "/posts",
           }}
         />
-        <div className="grid grid-cols-12 gap-8">
-          {props.data.map((item, index) => renderItem(item, index))}
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+          {props.data.map((item, index) => (
+            <FeaturedPostCard data={item} pos={index + 1} key={item._id} />
+          ))}
         </div>
       </div>
     </section>
@@ -206,67 +173,9 @@ const FeaturedPostsSection = (props: { data: PostType[] }) => {
 };
 
 const RecentPostsSection = (props: { data: Props["recentPosts"] }) => {
-  const renderItem = useCallback((item: Props["recentPosts"][0]) => {
-    const href = `/posts/${item.slug.current}`;
-    return (
-      <article className="col-span-12 lg:col-span-6" key={item._id}>
-        <Link href={href}>
-          <a className="group relative block aspect-video overflow-hidden rounded-xl">
-            <Image
-              src={imageUrl(item.coverImage).url()}
-              alt={`${item.title} - Cover Image`}
-              layout="fill"
-              objectFit="cover"
-            />
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100">
-              <p>Read More</p>
-            </div>
-          </a>
-        </Link>
-        {item.tags.length > 0 && (
-          <ul className="mt-4 flex flex-wrap gap-2">
-            {item.tags.map((tag) => (
-              <li key={tag._id}>
-                <Link href={`/tags/${tag.slug.current}`}>
-                  <a
-                    className="rounded-md border border-gray-200 bg-gray-100 px-2 py-1.5 text-sm hover:brightness-95 dark:border-gray-800 dark:bg-gray-900 dark:hover:brightness-75"
-                    style={{
-                      backgroundColor: tag.backgroundColor,
-                      color: tag.foregroundColor,
-                    }}
-                  >
-                    #{tag.slug.current}
-                  </a>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
-        <h2 className="mt-4 text-2xl font-bold line-clamp-2">
-          <Link href={href}>{item.title}</Link>
-        </h2>
-        <p className="mt-2 text-sm uppercase text-gray-600 line-clamp-2 dark:text-gray-300">
-          <span>
-            <b>{moment(item.publishedAt).format("MMM DD, YYYY")}</b>
-          </span>{" "}
-          •{" "}
-          <span>
-            By{" "}
-            <Link href={`/authors/${item.author.slug.current}`}>
-              <a>
-                <b>{item.author.name}</b>
-              </a>
-            </Link>
-          </span>
-        </p>
-      </article>
-    );
-  }, []);
-
   if (props.data && props.data.length === 0) {
     return null;
   }
-
   return (
     <section>
       <SectionHeader
@@ -276,8 +185,10 @@ const RecentPostsSection = (props: { data: Props["recentPosts"] }) => {
           href: "/posts",
         }}
       />
-      <div className="grid grid-cols-12 gap-8">
-        {props.data.map((item) => renderItem(item))}
+      <div className="grid gap-8 lg:grid-cols-2">
+        {props.data.map((item) => (
+          <DefaultPostCard item={item} key={item._id} />
+        ))}
       </div>
     </section>
   );
@@ -349,40 +260,6 @@ const PopularTagsSection = (props: { data: TagType[] }) => {
   );
 };
 const PopularPostsSection = (props: { data: PostType[] }) => {
-  const renderItem = useCallback((item: PostType, index: number) => {
-    const href = `/posts/${item.slug.current}`;
-    return (
-      <article
-        className="col-span-12 md:col-span-6 lg:col-span-3"
-        key={item._id}
-      >
-        <Link href={href}>
-          <a className="group relative block aspect-video overflow-hidden rounded-xl">
-            <Image
-              src={imageUrl(item.coverImage).url()}
-              alt={`${item.title} - Cover Image`}
-              layout="fill"
-              objectFit="cover"
-            />
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100">
-              <p>Read More</p>
-            </div>
-          </a>
-        </Link>
-        <div className="mt-4 flex gap-4">
-          <div className="h-full border-r border-gray-500 pr-4 text-3xl text-gray-500 dark:border-gray-400 dark:text-gray-400">
-            <span>{index + 1}</span>
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold line-clamp-2">
-              <Link href={href}>{item.title}</Link>
-            </h2>
-          </div>
-        </div>
-      </article>
-    );
-  }, []);
-
   if (props.data.length === 0) return null;
 
   return (
@@ -395,7 +272,9 @@ const PopularPostsSection = (props: { data: PostType[] }) => {
         }}
       />
       <ul className="grid gap-8">
-        {props.data.map((item, index) => renderItem(item, index))}
+        {props.data.map((item, index) => (
+          <FeaturedPostCard data={item} pos={index + 1} key={item._id} />
+        ))}
       </ul>
     </section>
   );

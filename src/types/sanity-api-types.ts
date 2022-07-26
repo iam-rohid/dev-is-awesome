@@ -112,3 +112,8 @@ export type AuthorType = {
   twitter?: string;
   instagram?: string;
 };
+
+export type PostWithAuthorAndTags = PostType & {
+  tags: TagType[];
+  author: AuthorType;
+};
