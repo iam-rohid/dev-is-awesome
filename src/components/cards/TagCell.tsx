@@ -13,7 +13,7 @@ const TagCell = ({
   size?: "small" | "medium" | "large";
 }) => {
   return (
-    <Link href={`/tags/${data.slug.current}`}>
+    <Link href={`/tags/${data.slug}`}>
       <a
         className={classNames(
           "flex items-center justify-center bg-gray-100 font-medium hover:brightness-90 dark:bg-gray-900 dark:hover:brightness-90",
@@ -28,7 +28,7 @@ const TagCell = ({
           color: data.foregroundColor,
         }}
       >
-        #{data.slug.current} {!!count && ` - ${count}`}
+        #{data.slug} {!!count && ` - ${count}`}
       </a>
     </Link>
   );

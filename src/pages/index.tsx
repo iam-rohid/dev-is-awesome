@@ -13,12 +13,10 @@ import {
   PostWithAuthorAndTags,
   TagType,
 } from "@/types/sanity-api-types";
-import moment from "moment";
 import { GetStaticProps } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect } from "react";
-import { MdChevronRight } from "react-icons/md";
 
 type Props = {
   featuredCourses: CourseType[];
@@ -29,6 +27,10 @@ type Props = {
 };
 
 const HomePage: CustomNextPage<Props> = (props) => {
+  useEffect(() => {
+    console.log(props);
+  }, [props]);
+
   const {
     featuredCourses,
     featuredPosts,
@@ -60,23 +62,57 @@ export default HomePage;
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const featuredCourses = await sanityClient.fetch(
-    `*[_type == "course" && featured == true] | order(publishedAt desc, title asc)[0..2]`
+    `*[_type == "course" && featured == true] | order(publishedAt desc, title asc)[0..2]{
+      "id": _id,
+      title,
+      coverImage,
+      "slug": slug.current
+    }`
   );
   const featuredPosts = await sanityClient.fetch(
-    `*[_type == "post" && featured == true] | order(publishedAt desc, title asc)[0..3]`
+    `*[_type == "post" && featured == true] | order(publishedAt desc, title asc)[0..3]{
+      "id": _id,
+      title,
+      coverImage,
+      "slug": slug.current,
+    }`
   );
   const recentPosts = await sanityClient.fetch(
     `*[_type == "post"] | order(publishedAt desc, title asc)[0..9]{
-      ..., 
-      "tags": *[_type == "tag" && _id in ^.tags[]._ref], 
-      author->
-    }`
+      "id": _id,
+        title,
+        excerpt,
+        publishedAt,
+        "slug": slug.current,
+        coverImage,
+        tags[]->{
+          "id": _id,
+          backgroundColor,
+          foregroundColor,
+          "slug": slug.current,
+        }, 
+        author->{
+          "id": _id,
+          name,
+          "slug": slug.current,
+        }
+      }`
   );
   const popularTags = await sanityClient.fetch(
-    `*[_type == "tag"] | order(_createdAt desc, title asc)[0..9]`
+    `*[_type == "tag"] | order(_createdAt desc, title asc)[0..9]{
+      "id": _id,
+      backgroundColor,
+      foregroundColor,
+      "slug": slug.current,
+    }`
   );
   const popularPosts = await sanityClient.fetch(
-    `*[_type == "post"] | order(_createdAt desc, title asc)[0..2]`
+    `*[_type == "post"] | order(_createdAt desc, title asc)[0..2]{
+      "id": _id,
+      title,
+      coverImage,
+      "slug": slug.current,
+    }`
   );
   return {
     props: {
@@ -91,19 +127,20 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 
 const FeaturedCoursesSection = (props: { data: CourseType[] }) => {
   const renderItem = useCallback((item: CourseType, index: number) => {
-    const href = `/courses/${item.slug.current}`;
+    const href = `/courses/${item.slug}`;
     return (
       <article
         className="col-span-12 md:col-span-6 lg:col-span-4"
-        key={item._id}
+        key={item.id}
       >
         <Link href={href}>
           <a className="group relative block aspect-video overflow-hidden rounded-xl">
             <Image
-              src={imageUrl(item.coverImage).url()}
+              src={imageUrl(item.coverImage).width(395).url()}
               alt={`${item.title} - Cover Image`}
               layout="fill"
               objectFit="cover"
+              priority
             />
             <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100">
               <p>View Course</p>
@@ -163,7 +200,7 @@ const FeaturedPostsSection = (props: { data: PostType[] }) => {
         />
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {props.data.map((item, index) => (
-            <FeaturedPostCard data={item} pos={index + 1} key={item._id} />
+            <FeaturedPostCard data={item} pos={index + 1} key={item.id} />
           ))}
         </div>
       </div>
@@ -186,7 +223,7 @@ const RecentPostsSection = (props: { data: Props["recentPosts"] }) => {
       />
       <div className="grid gap-8 lg:grid-cols-2">
         {props.data.map((item) => (
-          <DefaultPostCard item={item} key={item._id} />
+          <DefaultPostCard item={item} key={item.id} />
         ))}
       </div>
     </section>
@@ -234,7 +271,7 @@ const PopularTagsSection = (props: { data: TagType[] }) => {
       />
       <ul className="flex flex-wrap gap-2">
         {props.data.map((item, index) => (
-          <li key={item._id}>
+          <li key={item.id}>
             <TagCell data={item} />
           </li>
         ))}
@@ -257,7 +294,7 @@ const PopularPostsSection = (props: { data: PostType[] }) => {
       />
       <div className="grid gap-8">
         {props.data.map((item, index) => (
-          <FeaturedPostCard data={item} pos={index + 1} key={item._id} />
+          <FeaturedPostCard data={item} pos={index + 1} key={item.id} />
         ))}
       </div>
     </section>

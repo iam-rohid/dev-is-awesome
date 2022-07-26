@@ -7,7 +7,7 @@ import imageUrl from "@/lib/imageUrl";
 import TagCell from "./TagCell";
 
 const DefaultPostCard = ({ item }: { item: PostWithAuthorAndTags }) => {
-  const postLink = useMemo(() => `/posts/${item.slug.current}`, [item]);
+  const postLink = useMemo(() => `/posts/${item.slug}`, [item]);
 
   return (
     <article>
@@ -28,7 +28,7 @@ const DefaultPostCard = ({ item }: { item: PostWithAuthorAndTags }) => {
       {item.tags.length > 0 && (
         <ul className="mt-4 flex flex-wrap gap-2">
           {item.tags.map((item) => (
-            <li key={item._id}>
+            <li key={item.id}>
               <TagCell data={item} size="small" />
             </li>
           ))}
@@ -44,7 +44,7 @@ const DefaultPostCard = ({ item }: { item: PostWithAuthorAndTags }) => {
         •{" "}
         <span>
           By{" "}
-          <Link href={`/authors/${item.author.slug.current}`}>
+          <Link href={`/authors/${item.author.slug}`}>
             <a>
               <b>{item.author.name}</b>
             </a>

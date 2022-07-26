@@ -24,7 +24,7 @@ const TagsPage: CustomNextPage<Props> = (props) => {
       <div className="container mx-auto my-16 px-4 md:my-32 xl:max-w-4xl">
         <ul className="flex flex-wrap gap-4">
           {props.tags.map((item) => (
-            <li key={item._id}>
+            <li key={item.id}>
               <TagCell data={item} size="large" />
             </li>
           ))}
@@ -40,7 +40,12 @@ export default TagsPage;
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const tags = await sanityClient.fetch(
-    `*[_type == "tag"] | order(_createdAt desc, title asc)`
+    `*[_type == "tag"] | order(_createdAt desc, title asc){
+      "id": _id,
+      backgroundColor,
+      foregroundColor,
+      "slug": slug.current
+    }`
   );
   return {
     props: {

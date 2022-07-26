@@ -4,11 +4,6 @@ export type ReferanceType = {
   _key?: string;
 };
 
-export type SlugType = {
-  _type: "slug";
-  current: string;
-};
-
 export type ImageCropType = {
   bottom: number;
   left: number;
@@ -33,81 +28,57 @@ export type ImageType = {
 };
 
 export type CourseType = {
-  _type: "course";
-  _id: string;
-  _rev: string;
-  _createdAt: string;
-  _updatedAt: string;
+  id: string;
   title: string;
-  excerpt?: string;
-  featured?: boolean;
-  slug: SlugType;
+  slug: string;
   publishedAt: string;
   coverImage: ImageType;
+  excerpt?: string;
+  featured?: boolean;
 };
 
 export type LessionType = {
-  _type: "lession";
-  _id: string;
-  _rev: string;
-  _createdAt: string;
-  _updatedAt: string;
+  id: string;
   title: string;
-  slug: SlugType;
+  slug: string;
   excerpt?: string;
 };
 
 export type TopicType = {
-  _type: "topic";
-  _id: string;
-  _rev: string;
-  _createdAt: string;
-  _updatedAt: string;
+  id: string;
   emoji: string;
   title: string;
-  slug: SlugType;
-  excerpt: string;
-  body: string;
+  slug: string;
+  excerpt?: string;
+  body?: string;
 };
 
 export type PostType = {
-  _type: "post";
-  _id: string;
-  _rev: string;
-  _createdAt: string;
-  _updatedAt: string;
+  id: string;
   title: string;
-  slug: SlugType;
-  excerpt: string;
+  slug: string;
   publishedAt: string;
-  body: string;
   coverImage: ImageType;
-  keywords: string[];
+  excerpt?: string;
+  body?: string;
+  keywords?: string[];
   featured?: boolean;
 };
 
 export type TagType = {
-  _type: "tag";
-  _id: string;
-  _rev: string;
-  _createdAt: string;
-  _updatedAt: string;
-  title: string;
-  slug: SlugType;
+  id: string;
+  slug: string;
+  title?: string;
   description?: string;
   foregroundColor?: string;
   backgroundColor?: string;
 };
 
 export type AuthorType = {
-  _type: "author";
-  _id: string;
-  _rev: string;
-  _createdAt: string;
-  _updatedAt: string;
-  avatar: ImageType;
+  id: string;
+  slug: string;
   name: string;
-  slug: SlugType;
+  avatar?: ImageType;
   bio?: string;
   twitter?: string;
   instagram?: string;

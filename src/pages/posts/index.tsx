@@ -30,7 +30,7 @@ const PostsListPage: CustomNextPage<Props> = (props) => {
       <div className="container mx-auto my-16 px-4 md:my-32 xl:max-w-7xl">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {posts.map((item) => (
-            <DefaultPostCard item={item} key={item._id} />
+            <DefaultPostCard item={item} key={item.id} />
           ))}
         </div>
       </div>

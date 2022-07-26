@@ -5,7 +5,7 @@ import Link from "next/link";
 import imageUrl from "@/lib/imageUrl";
 
 const FeaturedPostCard = ({ data, pos }: { data: PostType; pos: number }) => {
-  const postLink = useMemo(() => `/posts/${data.slug.current}`, [data]);
+  const postLink = useMemo(() => `/posts/${data.slug}`, [data]);
   return (
     <article>
       <Link href={postLink}>
