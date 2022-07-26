@@ -23,10 +23,6 @@ type Props = {
 };
 
 const PostPage: CustomNextPage<Props> = (props) => {
-  useEffect(() => {
-    console.log(props);
-  }, [props]);
-
   const { post, mdxSource, timeStats } = props;
   return (
     <div className="container mx-auto my-16 flex gap-16 px-4 xl:max-w-7xl">
@@ -51,10 +47,11 @@ const PostPage: CustomNextPage<Props> = (props) => {
           </p>
           <div className="relative mt-8 aspect-video overflow-hidden rounded-2xl">
             <Image
-              src={imageUrl(post.coverImage).url()}
+              src={imageUrl(post.coverImage).width(928).url()}
               alt={`${post.title} - Cover Image`}
               layout="fill"
               objectFit="cover"
+              priority
             />
           </div>
         </div>

@@ -14,10 +14,11 @@ const DefaultPostCard = ({ item }: { item: PostWithAuthorAndTags }) => {
       <Link href={postLink}>
         <a className="group relative block aspect-video overflow-hidden rounded-xl">
           <Image
-            src={imageUrl(item.coverImage).url()}
+            src={imageUrl(item.coverImage).width(395).url()}
             alt={`${item.title} - Cover Image`}
             layout="fill"
             objectFit="cover"
+            priority
           />
           <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-white opacity-0 backdrop-blur-sm group-hover:opacity-100 dark:text-white">
             <p>Read More</p>
