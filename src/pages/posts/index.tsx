@@ -8,7 +8,7 @@ import React, { useEffect } from "react";
 
 type Props = {
   posts: PostWithAuthorAndTags[];
-  postCount: number;
+  postsCount: number;
 };
 
 const PostsListPage: CustomNextPage<Props> = (props) => {
@@ -16,14 +16,14 @@ const PostsListPage: CustomNextPage<Props> = (props) => {
     console.log(props);
   }, [props]);
 
-  const { postCount, posts } = props;
+  const { postsCount, posts } = props;
   return (
     <>
       <div className="my-16 md:my-32">
         <div className="container mx-auto px-4 text-center xl:max-w-7xl">
           <h1 className="text-4xl font-black">All Posts</h1>
           <p className="mt-2 text-gray-600 dark:text-gray-300">
-            {postCount} Posts
+            {postsCount} Posts
           </p>
         </div>
       </div>
@@ -45,16 +45,30 @@ export default PostsListPage;
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const posts = await sanityClient.fetch(
     `*[_type == "post"] | order(publishedAt desc, title asc)[0..8]{
-      ..., 
-      "tags": *[_type == "tag" && _id in ^.tags[]._ref], 
-      author->
+      "id": _id,
+      title,
+      excerpt,
+      publishedAt,
+      "slug": slug.current,
+      coverImage,
+      tags[]->{
+        "id": _id,
+        backgroundColor,
+        foregroundColor,
+        "slug": slug.current,
+      }, 
+      author->{
+        "id": _id,
+        name,
+        "slug": slug.current,
+      }
     }`
   );
-  const postCount = await sanityClient.fetch(`count(*[_type == "post"])`);
+  const postsCount = await sanityClient.fetch(`count(*[_type == "post"])`);
   return {
     props: {
       posts,
-      postCount,
+      postsCount,
     },
   };
 };

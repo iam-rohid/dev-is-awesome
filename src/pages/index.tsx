@@ -79,7 +79,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   );
   const recentPosts = await sanityClient.fetch(
     `*[_type == "post"] | order(publishedAt desc, title asc)[0..9]{
-      "id": _id,
+        "id": _id,
         title,
         excerpt,
         publishedAt,
