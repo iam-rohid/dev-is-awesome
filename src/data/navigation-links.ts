@@ -2,12 +2,24 @@ import { MenuItem } from "@/types/menu-item";
 
 export const navigationLinks: MenuItem[] = [
   {
-    label: "Blog",
-    href: "/blog",
+    label: "React",
+    href: "/tags/react",
   },
   {
-    label: "Tutorials",
-    href: "/tutorials",
+    label: "Next.js",
+    href: "/tags/next-js",
+  },
+  {
+    label: "TypeScript",
+    href: "/tags/typescript",
+  },
+  {
+    label: "How to",
+    href: "/tags/how-to",
+  },
+  {
+    label: "Posts",
+    href: "/posts",
   },
   {
     label: "Courses",

@@ -1,5 +1,7 @@
 import DefaultPostCard from "@/components/cards/DefaultPostCard";
 import FeaturedPostCard from "@/components/cards/FeaturedPostCard";
+import TagCell from "@/components/cards/TagCell";
+import SectionHeader from "@/components/SectionHeader";
 import { SITE_INFO } from "@/constants/site";
 import DefaultLayout from "@/layouts/DefaultLayout";
 import imageUrl from "@/lib/imageUrl";
@@ -61,23 +63,23 @@ export default HomePage;
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const featuredCourses = await sanityClient.fetch(
-    `*[_type == "course" && featured == true][0..2] | order(publishedAt desc, title asc)`
+    `*[_type == "course" && featured == true] | order(publishedAt desc, title asc)[0..2]`
   );
   const featuredPosts = await sanityClient.fetch(
-    `*[_type == "post" && featured == true][0..3] | order(publishedAt desc, title asc)`
+    `*[_type == "post" && featured == true] | order(publishedAt desc, title asc)[0..3]`
   );
   const recentPosts = await sanityClient.fetch(
-    `*[_type == "post"]{
+    `*[_type == "post"] | order(publishedAt desc, title asc)[0..9]{
       ..., 
       "tags": *[_type == "tag" && _id in ^.tags[]._ref], 
       author->
-    }[0..9] | order(publishedAt desc, title asc)`
+    }`
   );
   const popularTags = await sanityClient.fetch(
-    `*[_type == "tag"][0..9] | order(_createdAt desc, title asc)`
+    `*[_type == "tag"] | order(_createdAt desc, title asc)[0..9]`
   );
   const popularPosts = await sanityClient.fetch(
-    `*[_type == "post"][0..3] | order(_createdAt desc, title asc)`
+    `*[_type == "post"] | order(_createdAt desc, title asc)[0..2]`
   );
   return {
     props: {
@@ -130,7 +132,7 @@ const FeaturedCoursesSection = (props: { data: CourseType[] }) => {
   }
 
   return (
-    <section className="my-32">
+    <section className="my-32" id="featured-courses">
       <div className="container mx-auto px-4 xl:max-w-7xl">
         <SectionHeader
           title="Featured Courses"
@@ -196,7 +198,7 @@ const RecentPostsSection = (props: { data: Props["recentPosts"] }) => {
 
 const LandingHeader = () => (
   <header className="my-32 text-center lg:my-48">
-    <div className="container mx-auto px-4 xl:max-w-7xl">
+    <div className="container mx-auto px-4 xl:max-w-4xl">
       <div className="prose min-w-0 max-w-none dark:prose-invert md:prose-lg lg:prose-xl">
         <h1>
           Learn <span style={{ color: "#0EA5E9" }}>Web</span> &{" "}
@@ -222,26 +224,6 @@ const LandingHeader = () => (
 );
 
 const PopularTagsSection = (props: { data: TagType[] }) => {
-  const renderItem = useCallback((item: TagType, index: number) => {
-    return (
-      <li key={item._id}>
-        <Link href={`/tags/${item.slug.current}`}>
-          <a>
-            <p
-              className="flex items-center justify-center rounded-md border border-gray-200 bg-gray-100 py-1 px-3 hover:brightness-95 dark:border-gray-800 dark:bg-gray-900 dark:hover:brightness-75"
-              style={{
-                backgroundColor: item.backgroundColor,
-                color: item.foregroundColor,
-              }}
-            >
-              #{item.slug.current}
-            </p>
-          </a>
-        </Link>
-      </li>
-    );
-  }, []);
-
   if (props.data.length === 0) return null;
 
   return (
@@ -254,11 +236,16 @@ const PopularTagsSection = (props: { data: TagType[] }) => {
         }}
       />
       <ul className="flex flex-wrap gap-2">
-        {props.data.map((item, index) => renderItem(item, index))}
+        {props.data.map((item, index) => (
+          <li key={item._id}>
+            <TagCell data={item} />
+          </li>
+        ))}
       </ul>
     </section>
   );
 };
+
 const PopularPostsSection = (props: { data: PostType[] }) => {
   if (props.data.length === 0) return null;
 
@@ -271,39 +258,11 @@ const PopularPostsSection = (props: { data: PostType[] }) => {
           href: "/posts",
         }}
       />
-      <ul className="grid gap-8">
+      <div className="grid gap-8">
         {props.data.map((item, index) => (
           <FeaturedPostCard data={item} pos={index + 1} key={item._id} />
         ))}
-      </ul>
+      </div>
     </section>
   );
 };
-
-const SectionHeader = ({
-  title,
-  desc,
-  moreLink,
-}: {
-  title: string;
-  desc?: string;
-  moreLink?: { label?: string; href: string };
-}) => (
-  <div className="mb-8">
-    <div className="flex items-center gap-2 overflow-hidden">
-      <p className="flex-1 truncate text-2xl font-bold">{title}</p>
-      {!!moreLink && (
-        <Link href={moreLink.href}>
-          <a
-            className="flex items-center
-         justify-center gap-1 whitespace-nowrap rounded-md font-medium hover:text-gray-600 dark:hover:text-gray-300"
-          >
-            <span>{moreLink.label || "See all"}</span>
-            <MdChevronRight className="text-2xl" />
-          </a>
-        </Link>
-      )}
-    </div>
-    {!!desc && <p className="mt-2 text-gray-600 dark:text-gray-300">{desc}</p>}
-  </div>
-);

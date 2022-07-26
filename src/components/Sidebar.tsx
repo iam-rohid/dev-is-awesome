@@ -15,16 +15,15 @@ const Sidebar = () => {
   const router = useRouter();
 
   const menuItems = useMemo((): MenuItem[] => {
-    const route = router.asPath.split("/")[1];
     return [
       {
         label: "Home",
         href: "/",
-        isActive: route === "",
+        isActive: router.asPath === "/",
       },
       ...navigationLinks.map<MenuItem>((item) => ({
         ...item,
-        isActive: route === item.href.split("/")[1],
+        isActive: router.asPath === item.href,
       })),
     ];
   }, [router]);
@@ -44,8 +43,8 @@ const Sidebar = () => {
   return (
     <div className="fixed inset-0 z-30">
       <Backdrop onClick={handleCloseSidebar} />
-      <div className="absolute top-0 bottom-0 left-0 w-80 max-w-[100%] bg-white dark:bg-black z-10 overflow-y-auto">
-        <div className="h-14 flex items-center gap-4 bg-white dark:bg-black border-b border-gray-100 dark:border-gray-800 px-4 md:px-6 lg:px-8 sticky top-0 left-0 right-0 z-20">
+      <div className="absolute top-0 bottom-0 left-0 z-10 w-80 max-w-[100%] overflow-y-auto bg-white dark:bg-black">
+        <div className="sticky top-0 left-0 right-0 z-20 flex h-14 items-center gap-4 border-b border-gray-100 bg-white px-4 dark:border-gray-800 dark:bg-black md:px-6 lg:px-8">
           <Link href="/">
             <a className="flex-1" onClick={handleCloseSidebar}>
               <AppLogo />
@@ -53,7 +52,7 @@ const Sidebar = () => {
           </Link>
           <button
             onClick={handleCloseSidebar}
-            className="w-10 h-10 rounded-md hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 flex items-center justify-center"
+            className="flex h-10 w-10 items-center justify-center rounded-md hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600"
           >
             <MdClose className="text-2xl" />
           </button>

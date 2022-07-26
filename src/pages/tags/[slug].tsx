@@ -21,15 +21,15 @@ const TagPage: CustomNextPage<Props> = (props) => {
 
   return (
     <>
-      <header className="my-32">
+      <div className="my-16 md:my-32">
         <div className="container mx-auto px-4 text-center xl:max-w-7xl">
           <h1 className="text-4xl font-black">{props.tag.title}</h1>
           <p className="mt-2 text-gray-600 dark:text-gray-300">
             {props.postsCount} Posts
           </p>
         </div>
-      </header>
-      <div className="container mx-auto my-32 px-4 xl:max-w-7xl">
+      </div>
+      <div className="container mx-auto my-16 px-4 md:my-32 xl:max-w-7xl">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {posts.map((post) => (
             <DefaultPostCard item={post} key={post._id} />
@@ -76,7 +76,7 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
       ...,
       author->,
       "tags": *[_type == "tag" && _id in ^.tags[]._ref]
-    }[0..10] | order(publishedAt desc, title asc)`,
+    } | order(publishedAt desc, title asc)[0..9]`,
     { tagId: tag._id }
   );
 

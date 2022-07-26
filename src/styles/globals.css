@@ -7,5 +7,9 @@
 }
 
 body {
-  @apply bg-white dark:bg-black text-gray-900 dark:text-gray-50;
+  @apply bg-white text-gray-900 dark:bg-black dark:text-gray-50;
+}
+
+.prose pre {
+  @apply bg-gray-900 dark:bg-gray-900;
 }

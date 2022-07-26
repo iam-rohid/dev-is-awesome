@@ -24,10 +24,9 @@ const NavBar = () => {
   const router = useRouter();
 
   const menuItems = useMemo((): MenuItem[] => {
-    const route = router.asPath.split("/")[1];
     return navigationLinks.map<MenuItem>((item) => ({
       ...item,
-      isActive: route === item.href.split("/")[1],
+      isActive: router.asPath === item.href,
     }));
   }, [router]);
 
@@ -40,12 +39,12 @@ const NavBar = () => {
   }, [colorScheme]);
 
   return (
-    <nav className="sticky top-0 left-0 right-0 z-20 flex h-14 items-center gap-4 border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-black">
+    <nav className="sticky top-0 left-0 right-0 z-20 flex h-14 items-center gap-4 border-b border-gray-100 bg-white dark:border-gray-900 dark:bg-black">
       <div className="container mx-auto my-16 flex h-full items-center px-4 xl:max-w-7xl">
         <div className="flex flex-1 items-center justify-start gap-4 overflow-hidden">
           <button
             onClick={() => setShowSidebar(!showSidebar)}
-            className="flex h-10 w-10 items-center justify-center rounded-md hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-800 dark:active:bg-gray-700 md:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-md hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-800 dark:active:bg-gray-700 lg:hidden"
           >
             {showSidebar ? (
               <MdClose className="text-2xl" />
@@ -60,7 +59,7 @@ const NavBar = () => {
           </Link>
         </div>
         <div>
-          <ul className="hidden items-center justify-end gap-4 md:flex">
+          <ul className="hidden items-center justify-end gap-4 lg:flex">
             {menuItems.map((item) => (
               <li key={item.href}>
                 <Link href={item.href}>
@@ -79,7 +78,7 @@ const NavBar = () => {
             ))}
           </ul>
         </div>
-        <div className="flex justify-end gap-2 md:flex-1">
+        <div className="flex justify-end gap-2 lg:flex-1">
           {[
             {
               icon: <MdSearch className="text-2xl" />,

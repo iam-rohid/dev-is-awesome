@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import moment from "moment";
 import imageUrl from "@/lib/imageUrl";
+import TagCell from "./TagCell";
 
 const DefaultPostCard = ({ item }: { item: PostWithAuthorAndTags }) => {
   const postLink = useMemo(() => `/posts/${item.slug.current}`, [item]);
@@ -25,24 +26,14 @@ const DefaultPostCard = ({ item }: { item: PostWithAuthorAndTags }) => {
       </Link>
       {item.tags.length > 0 && (
         <ul className="mt-4 flex flex-wrap gap-2">
-          {item.tags.map((tag) => (
-            <li key={tag._id}>
-              <Link href={`/tags/${tag.slug.current}`}>
-                <a
-                  className="rounded-md border border-gray-200 bg-gray-100 px-2 py-1.5 text-sm hover:brightness-95 dark:border-gray-800 dark:bg-gray-900 dark:hover:brightness-75"
-                  style={{
-                    backgroundColor: tag.backgroundColor,
-                    color: tag.foregroundColor,
-                  }}
-                >
-                  #{tag.slug.current}
-                </a>
-              </Link>
+          {item.tags.map((item) => (
+            <li key={item._id}>
+              <TagCell data={item} size="small" />
             </li>
           ))}
         </ul>
       )}
-      <h2 className="mt-4 text-2xl font-bold line-clamp-2">
+      <h2 className="mt-2 text-2xl font-bold line-clamp-2">
         <Link href={postLink}>{item.title}</Link>
       </h2>
       <p className="mt-2 text-sm uppercase text-gray-600 line-clamp-2 dark:text-gray-300">

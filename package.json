@@ -14,10 +14,12 @@
     "jotai": "^1.7.6",
     "moment": "^2.29.4",
     "next": "12.2.3",
+    "next-mdx-remote": "^4.1.0",
     "next-sanity": "^0.6.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.4.0",
+    "reading-time": "^1.5.0",
     "remark": "^14.0.2",
     "strip-markdown": "^5.0.0"
   },
