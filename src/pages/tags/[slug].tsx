@@ -3,7 +3,7 @@ import sanityClient from "@/lib/sanityClient";
 import { CustomNextPage } from "@/types/next";
 import { PostWithAuthorAndTags, TagType } from "@/types/sanity-api-types";
 import { GetStaticPaths, GetStaticProps } from "next";
-import React, { useEffect } from "react";
+import React from "react";
 import DefaultPostCard from "@/components/cards/DefaultPostCard";
 
 type Props = {
@@ -13,9 +13,6 @@ type Props = {
 };
 
 const TagPage: CustomNextPage<Props> = (props) => {
-  console.log(props);
-  useEffect(() => {}, [props]);
-
   const { posts, postsCount, tag } = props;
 
   return (

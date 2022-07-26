@@ -4,7 +4,7 @@ import sanityClient from "@/lib/sanityClient";
 import { CustomNextPage } from "@/types/next";
 import { PostWithAuthorAndTags } from "@/types/sanity-api-types";
 import { GetStaticProps } from "next";
-import React, { useEffect } from "react";
+import React from "react";
 
 type Props = {
   posts: PostWithAuthorAndTags[];
@@ -12,10 +12,6 @@ type Props = {
 };
 
 const PostsListPage: CustomNextPage<Props> = (props) => {
-  useEffect(() => {
-    console.log(props);
-  }, [props]);
-
   const { postsCount, posts } = props;
   return (
     <>

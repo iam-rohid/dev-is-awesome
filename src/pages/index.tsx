@@ -16,7 +16,7 @@ import {
 import { GetStaticProps } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 
 type Props = {
   featuredCourses: CourseType[];
@@ -27,10 +27,6 @@ type Props = {
 };
 
 const HomePage: CustomNextPage<Props> = (props) => {
-  useEffect(() => {
-    console.log(props);
-  }, [props]);
-
   const {
     featuredCourses,
     featuredPosts,

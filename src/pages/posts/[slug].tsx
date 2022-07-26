@@ -30,9 +30,6 @@ type Props = {
 };
 
 const PostPage: CustomNextPage<Props> = (props) => {
-  useEffect(() => {
-    console.log(props);
-  }, [props]);
   const { post, mdxSource, timeStats, tags, author } = props;
   return (
     <div className="container mx-auto my-16 flex gap-16 px-4 xl:max-w-7xl">
