@@ -125,10 +125,7 @@ const FeaturedCoursesSection = (props: { data: CourseType[] }) => {
   const renderItem = useCallback((item: CourseType, index: number) => {
     const href = `/courses/${item.slug}`;
     return (
-      <article
-        className="col-span-12 md:col-span-6 lg:col-span-4"
-        key={item.id}
-      >
+      <article key={item.id}>
         <Link href={href}>
           <a className="group relative block aspect-video overflow-hidden rounded-xl">
             <Image
@@ -171,7 +168,7 @@ const FeaturedCoursesSection = (props: { data: CourseType[] }) => {
             href: "/courses",
           }}
         />
-        <div className="grid grid-cols-12 gap-8">
+        <div className="grid w-full gap-8 md:grid-cols-2 lg:grid-cols-3">
           {props.data.map((item, index) => renderItem(item, index))}
         </div>
       </div>
