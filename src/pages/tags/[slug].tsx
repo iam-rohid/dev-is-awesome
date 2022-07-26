@@ -7,7 +7,7 @@ import {
   TagType,
 } from "@/types/sanity-api-types";
 import { GetStaticPaths, GetStaticProps } from "next";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DefaultPostCard from "@/components/cards/DefaultPostCard";
 
 type Props = {
@@ -18,6 +18,10 @@ type Props = {
 
 const TagPage: CustomNextPage<Props> = (props) => {
   const [posts, setPosts] = useState(props.posts);
+
+  useEffect(() => {
+    setPosts(props.posts);
+  }, [props]);
 
   return (
     <>
@@ -49,9 +53,10 @@ export const getStaticPaths: GetStaticPaths = async () => {
     `*[_type == "tag"]{slug}`
   );
   const paths = tags.map((item) => `/tags/${item.slug.current}`);
+
   return {
     paths,
-    fallback: "blocking",
+    fallback: false,
   };
 };
 
@@ -65,11 +70,17 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
   }
 
   const tag = await sanityClient.fetch(
-    `*[_type == "tag" && slug.current == $tag][0]`,
+    `*[_type == "tag" && slug.current == $slug][0]`,
     {
-      tag: slug,
+      slug,
     }
   );
+
+  if (!tag) {
+    return {
+      notFound: true,
+    };
+  }
 
   const posts = await sanityClient.fetch(
     `*[_type == "post" && $tagId in tags[]._ref]{

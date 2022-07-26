@@ -28,17 +28,14 @@ type Props = {
   popularPosts: PostType[];
 };
 
-const HomePage: CustomNextPage<Props> = ({
-  featuredCourses,
-  featuredPosts,
-  recentPosts,
-  popularTags,
-  popularPosts,
-}) => {
-  useEffect(() => {
-    console.log({ recentPosts });
-  }, [recentPosts]);
-
+const HomePage: CustomNextPage<Props> = (props) => {
+  const {
+    featuredCourses,
+    featuredPosts,
+    recentPosts,
+    popularTags,
+    popularPosts,
+  } = props;
   return (
     <>
       <LandingHeader />
