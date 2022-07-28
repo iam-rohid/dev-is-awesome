@@ -2,6 +2,10 @@ import { MenuItem } from "@/types/menu-item";
 
 export const navigationLinks: MenuItem[] = [
   {
+    label: "Blog",
+    href: "/posts",
+  },
+  {
     label: "React",
     href: "/tags/react",
   },
@@ -17,14 +21,10 @@ export const navigationLinks: MenuItem[] = [
     label: "How to",
     href: "/tags/how-to",
   },
-  {
-    label: "Posts",
-    href: "/posts",
-  },
-  {
-    label: "Courses",
-    href: "/courses",
-  },
+  // {
+  //   label: "Courses",
+  //   href: "/courses",
+  // },
   {
     label: "Tags",
     href: "/tags",

@@ -37,7 +37,7 @@ const HomePage: CustomNextPage<Props> = (props) => {
   return (
     <>
       <LandingHeader />
-      <FeaturedCoursesSection data={featuredCourses} />
+      {/* <FeaturedCoursesSection data={featuredCourses} /> */}
       <FeaturedPostsSection data={featuredPosts} />
       <div className="container mx-auto my-32 flex flex-col gap-16 px-4 md:flex-row xl:max-w-7xl">
         <div className="flex-1">

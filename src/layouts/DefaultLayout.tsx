@@ -9,7 +9,7 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
     <>
       <NavBar />
       <main>{children}</main>
-      <Newsletter />
+      {/* <Newsletter /> */}
       <Footer />
       <Sidebar />
     </>
